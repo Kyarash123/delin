@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="fa" dir="rtl" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منوی کافه دلین</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Vazirmatn', sans-serif;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .menu-item {
+      transition: all 0.3s ease;
+    }
+    
+    .menu-item:hover {
+      transform: translateX(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .category-btn {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      border: 2px solid transparent;
+    }
+    
+    .category-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+    }
+    
+    .category-btn.active {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    .price-badge {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    
+    .header-glow {
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    }
+    
+    .categories-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(16, 185, 129, 0.3) transparent;
+    }
+    
+    .categories-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .categories-scroll::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 0 20px;
+    }
+    
+    .categories-scroll::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+    }
+    
+    .categories-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.5);
+    }
+    
+    .contact-btn {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    
+    .contact-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .contact-btn:active {
+      transform: translateY(-1px);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full">
+  <div id="app" class="h-full w-full overflow-auto"></div>
+  <script>
+    const defaultConfig = {
+      background_color: "#f0fdf4",
+      surface_color: "#ffffff",
+      text_color: "#064e3b",
+      primary_action_color: "#10b981",
+      secondary_action_color: "#6ee7b7",
+      font_family: "Vazirmatn",
+      font_size: 16,
+      cafe_name: "CAFE DELIN",
+      tagline: "تجربه‌ای لوکس از قهوه و دسر",
+      phone: "021-77888842",
+      instagram: "CAFE___DELIN"
+    };
+
+    const menuData = [
+      {
+        id: 'hot-espresso',
+        icon: '☕',
+        title: 'نوشیدنی گرم بر پایه اسپرسو',
+        items: [
+          { name: 'اسپرسو', price: 75 },
+          { name: 'اسپرسو دبل', price: 85 },
+          { name: 'آمریکانو', price: 95 },
+          { name: 'کاپوچینو', price: 130 },
+          { name: 'لته', price: 130 },
+          { name: 'کارامل ماکیاتو', price: 140 },
+          { name: 'موکا', price: 140 },
+          { name: 'موکا فندقی', price: 140 }
+        ]
+      },
+      {
+        id: 'hot-chocolate',
+        icon: '🍫',
+        title: 'نوشیدنی‌های گرم',
+        items: [
+          { name: 'هات چاکلت', price: 140 },
+          { name: 'پینک چاکلت', price: 140 },
+          { name: 'وایت چاکلت', price: 140 },
+          { name: 'نوتلا چاکلت', price: 145 },
+          { name: 'کارامل بیسکویت', price: 140 }
+        ]
+      },
+      {
+        id: 'iced-espresso',
+        icon: '🧊',
+        title: 'نوشیدنی سرد بر پایه اسپرسو',
+        items: [
+          { name: 'آیس لته', price: 140 },
+          { name: 'آیس موکا', price: 145 },
+          { name: 'آیس کارامل ماکیاتو', price: 145 },
+          { name: 'آیس آمریکانو', price: 100 }
+        ]
+      },
+      {
+        id: 'cold-drinks',
+        icon: '🧃',
+        title: 'سردنوش‌ها',
+        items: [
+          { name: 'خاکشیر زعفران', price: 135 },
+          { name: 'خاکشیر', price: 110 },
+          { name: 'زعفران', price: 120 },
+          { name: 'نعنا', price: 110 },
+          { name: 'شاتوت', price: 130 },
+          { name: 'آلبالو', price: 120 },
+          { name: 'زرشک آلبالو', price: 120 }
+        ]
+      },
+      {
+        id: 'herbal-tea',
+        icon: '🍵',
+        title: 'دم‌نوش‌ها',
+        items: [
+          { name: 'دمنوش دلین (آویشن، به‌لیمو، بابونه)', price: 120 },
+          { name: 'دمنوش خنده (بهارنارنج، زعفران، دارچین، لیمو)', price: 120 },
+          { name: 'دمنوش انرژی (چای سبز، نعنا، سنبلطیب)', price: 120 },
+          { name: 'دمنوش سرماخوردگی (آویشن، عسل، نعنا، آلوئه‌ورا، لیمو)', price: 130 },
+          { name: 'دمنوش گل گاوزبان', price: 120 }
+        ]
+      },
+      {
+        id: 'cake',
+        icon: '🍰',
+        title: 'کیک و دسر',
+        items: [
+          { name: 'کیک روز', }
+        ]
+      },
+      {
+        id: 'mocktail',
+        icon: '🥤',
+        title: 'موکتل',
+        items: [
+          { name: 'موهیتو', price: 170 },
+          { name: 'رد موهیتو', price: 180 },
+          { name: 'لیموناد', price: 140 },
+          { name: 'اقیانوس آبی (سیروپ بلوبری، لیمو، انرژی‌زا)', price: 180 }
+        ]
+      },
+      {
+        id: 'shakes',
+        icon: '🥤',
+        title: 'شیک‌ها',
+        items: [
+          { name: 'شکلات', price: 180 },
+          { name: 'نوتلا', price: 190 },
+          { name: 'نوتلابری', price: 195 },
+          { name: 'توت‌فرنگی', price: 180 },
+          { name: 'بادام زمینی', price: 190 },
+          { name: 'اسنیکرز', price: 190 },
+          { name: 'اسپرسو', price: 180 },
+          { name: 'موزشکلات', price: 195 },
+          { name: 'کیت‌کت', price: 190 }
+        ]
+      },
+      {
+        id: 'tea',
+        icon: '🍵',
+        title: 'چای‌ها',
+        items: [
+          { name: 'چای سیاه (فرنچ پرس)', price: 90 },
+          { name: 'چای لیوانی', price: 50 },
+          { name: 'چای ترش', price: 130 },
+          { name: 'چای سبز', price: 120 },
+          { name: 'چای ماسالا', price: 140 },
+          { name: 'چای کرک', price: 140 }
+        ]
+      },
+      {
+        id: 'breakfast',
+        icon: '🍳',
+        title: 'صبحانه',
+        items: [
+          { name: 'نیمرو سنتی', price: 90 },
+          { name: 'املت', price: 120 },
+          { name: 'سوسیس تخم‌مرغ', price: 140 },
+          { name: 'پنیر برشته (پنیر سرخ‌شده، شوید، تخم‌مرغ)', price: 160 }
+        ]
+      },
+      {
+        id: 'snacks',
+        icon: '🥪',
+        title: 'میان‌وعده',
+        items: [
+          { name: 'سیب‌زمینی', price: 170 },
+          { name: 'سیب‌زمینی ویژه', price: 280 },
+          { name: 'اسنک', price: 150 },
+          { name: 'چیپس و پنیر و قارچ', price: 200 },
+          { name: 'شنیسل و سیب‌زمینی', price: 300 },
+          { name: 'سیب‌زمینی تنوری', price: 150 },
+          { name: 'پیتزا مخلوط', price: 250 },
+          { name: '��یتزا پپرونی', price: 280 }
+        ]
+      },
+      {
+        id: 'hookah',
+        icon: '💨',
+        title: 'قلیان‌ها',
+        subtitle: 'همه 250 تومان',
+        items: [
+          { name: 'دوسیب', price: 250 },
+          { name: 'دوسیب آلبالو', price: 250 },
+          { name: 'انبه', price: 250 },
+          { name: 'آدامس دارچین', price: 250 },
+          { name: 'بیسکویت', price: 250 },
+          { name: 'بلوملون', price: 250 },
+          { name: 'هندوانه یخ', price: 250 },
+          { name: 'شب‌های مسکو', price: 250 },
+          { name: 'لاو', price: 250 },
+          { name: 'تمشک بستنی', price: 250 },
+          { name: 'لیدی کیلر', price: 250 },
+          { name: 'لیمونعنا', price: 250 }
+        ]
+      },
+      {
+        id: 'beverages',
+        icon: '🧃',
+        title: 'نوشیدنی',
+        items: [
+          { name: 'آب معدنی', price: null },
+          { name: 'دلستر', price: null },
+          { name: 'نوشابه', price: null },
+          { name: 'انرژی‌زا', price: null }
+        ]
+      }
+    ];
+
+    let currentCategory = 'hot-espresso';
+
+    async function onConfigChange(config) {
+      const baseFontSize = config.font_size || defaultConfig.font_size;
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'Vazirmatn, sans-serif';
+      const fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+      const app = document.getElementById('app');
+      app.style.backgroundColor = bgColor;
+      app.style.fontFamily = fontFamily;
+
+      const header = document.getElementById('header');
+      if (header) {
+        header.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      }
+
+      const cafeName = document.getElementById('cafe-name');
+      if (cafeName) {
+        cafeName.textContent = config.cafe_name || defaultConfig.cafe_name;
+        cafeName.style.fontSize = `${baseFontSize * 2.5}px`;
+        cafeName.style.color = surfaceColor;
+        cafeName.style.fontFamily = fontFamily;
+      }
+
+      const tagline = document.getElementById('tagline');
+      if (tagline) {
+        tagline.textContent = config.tagline || defaultConfig.tagline;
+        tagline.style.fontSize = `${baseFontSize * 0.9}px`;
+        tagline.style.color = surfaceColor;
+        tagline.style.fontFamily = fontFamily;
+      }
+
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      categoryButtons.forEach(btn => {
+        btn.style.fontFamily = fontFamily;
+        btn.style.fontSize = `${baseFontSize * 0.9}px`;
+        if (btn.dataset.category === currentCategory) {
+          btn.style.backgroundColor = primaryColor;
+          btn.style.color = surfaceColor;
+          btn.style.borderColor = primaryColor;
+        } else {
+          btn.style.backgroundColor = surfaceColor;
+          btn.style.color = textColor;
+          btn.style.borderColor = 'transparent';
+        }
+      });
+
+      const categoryTitle = document.getElementById('category-title');
+      if (categoryTitle) {
+        categoryTitle.style.fontSize = `${baseFontSize * 1.8}px`;
+        categoryTitle.style.color = primaryColor;
+        categoryTitle.style.fontFamily = fontFamily;
+      }
+
+      const categorySubtitle = document.getElementById('category-subtitle');
+      if (categorySubtitle) {
+        categorySubtitle.style.fontSize = `${baseFontSize * 0.9}px`;
+        categorySubtitle.style.color = textColor;
+        categorySubtitle.style.fontFamily = fontFamily;
+      }
+
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => {
+        item.style.backgroundColor = surfaceColor;
+        const itemName = item.querySelector('.item-name');
+        if (itemName) {
+          itemName.style.fontSize = `${baseFontSize}px`;
+          itemName.style.color = textColor;
+          itemName.style.fontFamily = fontFamily;
+        }
+        const itemPrice = item.querySelector('.item-price');
+        if (itemPrice) {
+          itemPrice.style.fontSize = `${baseFontSize * 1.1}px`;
+          itemPrice.style.color = primaryColor;
+          itemPrice.style.fontFamily = fontFamily;
+        }
+      });
+
+      const footer = document.getElementById('footer');
+      if (footer) {
+        footer.style.backgroundColor = surfaceColor;
+      }
+
+      const footerTitle = document.getElementById('footer-title');
+      if (footerTitle) {
+        footerTitle.style.fontSize = `${baseFontSize * 1.5}px`;
+        footerTitle.style.color = primaryColor;
+        footerTitle.style.fontFamily = fontFamily;
+      }
+
+      const contactItems = document.querySelectorAll('.contact-btn');
+      contactItems.forEach(item => {
+        item.style.backgroundColor = surfaceColor;
+        const label = item.querySelector('.contact-label');
+        if (label) {
+          label.style.fontSize = `${baseFontSize * 0.85}px`;
+          label.style.color = textColor;
+          label.style.fontFamily = fontFamily;
+        }
+        const value = item.querySelector('.contact-value');
+        if (value) {
+          value.style.fontSize = `${baseFontSize}px`;
+          value.style.color = primaryColor;
+          value.style.fontFamily = fontFamily;
+        }
+      });
+
+      const phoneValue = document.getElementById('phone-value');
+      if (phoneValue) {
+        phoneValue.textContent = config.phone || defaultConfig.phone;
+      }
+
+      const instagramValue = document.getElementById('instagram-value');
+      if (instagramValue) {
+        instagramValue.textContent = config.instagram || defaultConfig.instagram;
+      }
+    }
+
+    function renderApp() {
+      const config = window.elementSdk?.config || defaultConfig;
+      const currentCategoryData = menuData.find(cat => cat.id === currentCategory);
+      
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="w-full" style="min-height: 100%;">
+          <!-- Header -->
+          <header id="header" class="py-8 px-6 text-center shadow-lg">
+            <h1 id="cafe-name" class="header-glow mb-2"></h1>
+            <p id="tagline" class="opacity-90"></p>
+          </header>
+
+          <!-- Category Buttons -->
+          <div class="categories-scroll py-6 overflow-x-auto">
+            <div class="flex gap-3 px-4 pb-2" style="min-width: max-content; justify-content: start;">
+              ${menuData.map(category => `
+                <button 
+                  class="category-btn px-6 py-3 rounded-full shadow-lg font-semibold whitespace-nowrap flex items-center gap-2"
+                  data-category="${category.id}"
+                  onclick="selectCategory('${category.id}')"
+                >
+                  <span style="font-size: 1.4em;">${category.icon}</span>
+                  <span>${category.title}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Menu Items -->
+          <div class="px-4 pb-6">
+            <div class="max-w-4xl mx-auto">
+              <div class="text-center mb-6 fade-in">
+                <h2 id="category-title" class="font-bold mb-2">
+                  <span style="margin-left: 12px; font-size: 1.3em;">${currentCategoryData.icon}</span>
+                  ${currentCategoryData.title}
+                </h2>
+                ${currentCategoryData.subtitle ? `
+                  <p id="category-subtitle" class="opacity-75">${currentCategoryData.subtitle}</p>
+                ` : ''}
+              </div>
+              
+              <div class="space-y-3">
+                ${currentCategoryData.items.map(item => `
+                  <div class="menu-item p-5 rounded-2xl shadow-md flex justify-between items-center fade-in">
+                    <span class="item-name font-medium">${item.name}</span>
+                    ${item.price ? `
+                      <span class="item-price price-badge font-bold">
+                        ${item.price.toLocaleString('fa-IR')} تومان
+                      </span>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <footer id="footer" class="mt-8 py-8 px-6 shadow-lg">
+            <div class="max-w-4xl mx-auto text-center">
+              <h3 id="footer-title" class="font-bold mb-6">اطلاعات تماس</h3>
+              <div class="space-y-3 max-w-md mx-auto">
+                <a href="tel:${config.phone || defaultConfig.phone}" class="contact-btn block">
+                  <div class="contact-label opacity-75 mb-1">📞 تلفن</div>
+                  <div id="phone-value" class="contact-value font-bold"></div>
+                </a>
+                <a href="https://www.instagram.com/cafe___delin?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="contact-btn block">
+                  <div class="contact-label opacity-75 mb-1">📱 اینستاگرام</div>
+                  <div id="instagram-value" class="contact-value font-bold"></div>
+                </a>
+              </div>
+            </div>
+          </footer>
+        </div>
+      `;
+
+      onConfigChange(config);
+    }
+
+    function selectCategory(categoryId) {
+      currentCategory = categoryId;
+      renderApp();
+    }
+
+    window.selectCategory = selectCategory;
+
+    const element = {
+      defaultConfig,
+      onConfigChange,
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              config.surface_color = value;
+              window.elementSdk.setConfig({ surface_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.primary_action_color || defaultConfig.primary_action_color,
+            set: (value) => {
+              config.primary_action_color = value;
+              window.elementSdk.setConfig({ primary_action_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+            set: (value) => {
+              config.secondary_action_color = value;
+              window.elementSdk.setConfig({ secondary_action_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['cafe_name', config.cafe_name || defaultConfig.cafe_name],
+        ['tagline', config.tagline || defaultConfig.tagline],
+        ['phone', config.phone || defaultConfig.phone],
+        ['instagram', config.instagram || defaultConfig.instagram]
+      ])
+    };
+
+    if (window.elementSdk) {
+      window.elementSdk.init(element);
+    }
+
+    renderApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b485c535790e633',t:'MTc2NjgzMzcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
